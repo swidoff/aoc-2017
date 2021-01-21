@@ -1,0 +1,61 @@
+import operator
+from functools import reduce
+from typing import List, Tuple
+
+import toolz
+
+
+def read_input() -> str:
+    with open("../input/day10.txt") as file:
+        return file.readline().strip()
+
+
+def parse_input(line: str) -> List[int]:
+    return list(map(int, line.split(",")))
+
+
+def knot(ls: List[int], lengths: List[int], pos: int = 0, skip: int = 0) -> Tuple[List[int], int, int]:
+    for ln in lengths:
+        sublist = [ls[(pos + i) % len(ls)] for i in range(ln)]
+
+        reversed_sublist = list(reversed(sublist))
+
+        for i in range(ln):
+            ls[(pos + i) % len(ls)] = reversed_sublist[i]
+
+        pos = (pos + ln) % len(ls) + skip
+        skip += 1
+
+    return ls, pos, skip
+
+
+def part1(ls: List[int], lengths: List[int]) -> int:
+    res, *_ = knot(ls, lengths)
+    return res[0] * res[1]
+
+
+def to_hex(v: int) -> str:
+    s = hex(v)[2:]
+    return s if len(s) == 2 else "0" + s
+
+
+def part2(ls: List[int], inp: str) -> str:
+    new_lengths = [ord(c) for c in inp] + [17, 31, 73, 47, 23]
+    pos, skip = 0, 0
+    for _ in range(64):
+        ls, pos, skip = knot(ls, new_lengths, pos, skip)
+
+    res = "".join(to_hex(reduce(operator.xor, part)) for part in toolz.partition(16, ls))
+    return res
+
+
+def test_part1_example():
+    assert part1(list(range(5)), [3, 4, 1, 5]) == 12
+
+
+def test_part1():
+    print(part1(list(range(256)), parse_input(read_input())))
+
+
+def test_part2():
+    print(part2(list(range(256)), read_input()))
