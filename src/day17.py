@@ -1,6 +1,3 @@
-from array import array
-
-
 def part1(steps: int):
     ls = [0]
     pos = 0
