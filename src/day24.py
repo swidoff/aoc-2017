@@ -1,9 +1,4 @@
-import operator
-import re
-from collections import defaultdict
-from typing import List, Tuple, Set
-
-import toolz
+from typing import List, Tuple
 
 
 def read_input() -> List[str]:
